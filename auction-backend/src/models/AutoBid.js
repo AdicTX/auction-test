@@ -1,7 +1,19 @@
-module.exports = (sequelize, DataTypes) => {
+// models/AutoBid.js
+const { DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
   const AutoBid = sequelize.define(
     "AutoBid",
     {
+      user_id: {
+        // Asegúrate de que esta columna esté definida
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      item_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       max_amount: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
@@ -15,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       indexes: [
         {
           unique: true,
-          fields: ["user_id", "item_id"],
+          fields: ["user_id", "item_id"], // Índice compuesto
         },
       ],
     }

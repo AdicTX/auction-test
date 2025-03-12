@@ -1,5 +1,5 @@
-const { Bid, Item, AutoBid } = require("../models");
-const sequelize = require("../config/db");
+const { Bid, Item, AutoBid } = require("../db");
+const sequelize = require("../db");
 
 exports.createBid = async (req, res) => {
   const t = await sequelize.transaction();

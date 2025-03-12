@@ -1,4 +1,6 @@
-module.exports = (sequelize, DataTypes) => {
+const { DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
   const Bid = sequelize.define("Bid", {
     amount: {
       type: DataTypes.DECIMAL(10, 2),
@@ -9,10 +11,4 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   });
-
-  Bid.associate = (models) => {
-    Bid.belongsTo(models.Item, { foreignKey: "item_id" });
-  };
-
-  return Bid;
 };

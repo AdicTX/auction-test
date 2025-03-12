@@ -1,29 +1,39 @@
+// server.js
 const express = require("express");
-const cors = require("cors");
-const sequelize = require("./config/db");
-const authRoutes = require("./routes/auth");
-const itemRoutes = require("./routes/items");
-const bidRoutes = require("./routes/bids");
-const adminRoutes = require("./routes/admin");
-
+const bodyParser = require("body-parser");
 const app = express();
+const { conn } = require("./db.js");
+const path = require("path");
 
-// Middleware
+// Middlewares
+
+const cors = require("cors");
 app.use(cors());
-app.use(express.json());
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/items", itemRoutes);
-app.use("/api/bids", bidRoutes);
-app.use("/api/admin", adminRoutes);
+const authRoutes = require("./routes/auth.route");
+const adminRoutes = require("./routes/admin.route");
+const bidRoutes = require("./routes/bid.route");
+const itemRoutes = require("./routes/items.route");
 
-// Database sync
-sequelize.sync({ force: false }).then(() => {
-  console.log("Database connected");
-});
+//server
+app.use("/auth", authRoutes);
+app.use("/admin", adminRoutes);
+app.use("/bids", bidRoutes);
+app.use("/items", itemRoutes);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+conn
+  .sync()
+  //   .sync({ alter: true })
+  //   .sync({ force: true }) // Elimina y crea de nuevo las tablas (solo para desarrollo)
+  .then(() => {
+    app.listen(process.env.PORT || 5000, () => {
+      console.log(`Server running on port ${process.env.PORT || 5000}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
+  });

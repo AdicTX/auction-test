@@ -1,10 +1,15 @@
-module.exports = (sequelize, DataTypes) => {
+const { DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
   const Item = sequelize.define("Item", {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    description: DataTypes.TEXT,
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     start_price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
@@ -21,13 +26,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    image_url: DataTypes.STRING,
+    image_url: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   });
-
-  Item.associate = (models) => {
-    Item.hasMany(models.Bid, { foreignKey: "item_id" });
-    Item.hasMany(models.AutoBid, { foreignKey: "item_id" });
-  };
-
-  return Item;
 };
