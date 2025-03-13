@@ -15,8 +15,20 @@ import {
   useTheme,
   Avatar,
   Stack,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
 } from "@mui/material";
-import { Edit, ArrowBack, Event, MonetizationOn, Schedule } from "@mui/icons-material";
+import {
+  Edit,
+  ArrowBack,
+  Event,
+  MonetizationOn,
+  Schedule,
+  Person,
+  Gavel,
+} from "@mui/icons-material";
 import axiosInstance from "../../axiosInstance";
 import moment from "moment";
 import { styled } from "@mui/material/styles";
@@ -49,6 +61,7 @@ const ItemDetail = () => {
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [timeLeft, setTimeLeft] = useState("");
+  const [bidHistory, setBidHistory] = useState([]);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -60,7 +73,15 @@ const ItemDetail = () => {
         console.error("Error fetching item:", error);
       }
     };
-
+    const fetchBidHistory = async () => {
+      try {
+        const response = await axiosInstance.get(`/bids/item/${id}`);
+        setBidHistory(response.data);
+      } catch (error) {
+        console.error("Error fetching bid history:", error);
+      }
+    };
+    fetchBidHistory();
     fetchItem();
   }, [id]);
 
@@ -174,6 +195,28 @@ const ItemDetail = () => {
                 >
                   Edit Item
                 </Button>
+              </Box>
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h6" gutterBottom color="text.secondary">
+                  Bid History
+                </Typography>
+                <List>
+                  {bidHistory.map((bid) => (
+                    <ListItem key={bid.id}>
+                      <ListItemAvatar>
+                        <Avatar>
+                          <Person />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={`$${bid.amount}`}
+                        secondary={`${moment(bid.createdAt).format("DD/MM/YYYY HH:mm")} by ${
+                          bid.user_id || "Anonymous"
+                        }`}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
               </Box>
             </CardContent>
           </Grid>

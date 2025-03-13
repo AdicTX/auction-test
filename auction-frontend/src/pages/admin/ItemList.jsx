@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  Card,
-  CardContent,
-  CardMedia,
-  Chip,
   Container,
-  Grid,
   Pagination,
   TextField,
   Typography,
@@ -19,6 +14,15 @@ import {
   DialogTitle,
   IconButton,
   CircularProgress,
+  Table,
+  TableBody,
+  Chip,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Avatar,
 } from "@mui/material";
 import { Edit, Visibility, Add, Delete } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
@@ -80,12 +84,11 @@ const ItemList = () => {
   };
 
   const handleImageError = (e) => {
-    e.target.src = "/placeholder-item.jpg";
+    e.target.src = "/placeholder-item.png";
   };
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Delete Confirmation Dialog */}
       <ToastContainer />
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Delete Item</DialogTitle>
@@ -102,7 +105,6 @@ const ItemList = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Header Section */}
       <Box
         sx={{
           display: "flex",
@@ -165,124 +167,104 @@ const ItemList = () => {
         </Box>
       </Box>
 
-      {/* Items Grid */}
-      <Grid container spacing={3}>
-        {items.map((item) => (
-          <Grid item key={item.id} xs={12} sm={6} md={4} lg={3}>
-            <Card
-              sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                transition: "0.3s",
-                boxShadow: theme.shadows[3],
-                "&:hover": {
-                  transform: "translateY(-5px)",
-                  boxShadow: theme.shadows[6],
-                },
-              }}
-            >
-              <CardMedia
-                component="img"
-                height="200"
-                image={item.image_url ? `${baseUrl}/${item.image_url}` : "/placeholder-item.png"}
-                alt={item.name}
-                sx={{
-                  objectFit: "cover",
-                  borderTopLeftRadius: 8,
-                  borderTopRightRadius: 8,
-                }}
-                onError={handleImageError}
-              />
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                  {item.name}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    mb: 2,
-                    display: "-webkit-box",
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                  }}
-                >
-                  {item.description}
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: 1,
-                    mb: 2,
-                  }}
-                >
+      <TableContainer component={Paper} sx={{ mt: 3, boxShadow: theme.shadows[3] }}>
+        <Table sx={{ minWidth: 650 }} aria-label="items table">
+          <TableHead sx={{ backgroundColor: theme.palette.grey[100] }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600 }}>Image</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Price</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>End Date</TableCell>
+              <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {items.map((item) => (
+              <TableRow
+                key={item.id}
+                hover
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell>
+                  <Avatar
+                    variant="square"
+                    src={item.image_url ? `${baseUrl}/${item.image_url}` : "/placeholder-item.png"}
+                    alt={item.name}
+                    sx={{
+                      width: 80,
+                      height: 60,
+                      objectFit: "cover",
+                      borderRadius: 1,
+                    }}
+                    onError={handleImageError}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body1" fontWeight={500}>
+                    {item.name}
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{ maxWidth: 300 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {item.description}
+                  </Typography>
+                </TableCell>
+                <TableCell>
                   <Chip
                     label={`$${item.current_price}`}
                     color="primary"
                     variant="outlined"
                     sx={{ fontWeight: 600 }}
                   />
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: theme.palette.text.secondary,
-                      fontStyle: "italic",
-                    }}
-                  >
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2">
                     {moment(item.end_time).format("MMM DD, YYYY")}
                   </Typography>
-                </Box>
-              </CardContent>
-              <Box
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  gap: 1,
-                  justifyContent: "space-between",
-                  borderTop: `1px solid ${theme.palette.divider}`,
-                }}
-              >
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<Visibility />}
-                    component={Link}
-                    to={`/admin/detail/${item.id}`}
-                    size="small"
-                    sx={{ borderRadius: 50 }}
-                  >
-                    View
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<Edit />}
-                    component={Link}
-                    to={`/admin/edit/${item.id}`}
-                    size="small"
-                    sx={{ borderRadius: 50 }}
-                  >
-                    Edit
-                  </Button>
-                </Box>
-                <IconButton
-                  color="error"
-                  onClick={() => handleDeleteConfirmation(item)}
-                  size="small"
-                  sx={{ ml: 1 }}
-                >
-                  <Delete />
-                </IconButton>
-              </Box>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                </TableCell>
+                <TableCell sx={{ textAlign: "center" }}>
+                  <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+                    <IconButton
+                      component={Link}
+                      to={`/admin/detail/${item.id}`}
+                      color="primary"
+                      size="small"
+                    >
+                      <Visibility fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      component={Link}
+                      to={`/admin/edit/${item.id}`}
+                      color="secondary"
+                      size="small"
+                    >
+                      <Edit fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDeleteConfirmation(item)}
+                      size="small"
+                    >
+                      <Delete fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <Pagination

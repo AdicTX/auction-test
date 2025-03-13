@@ -1,10 +1,9 @@
 const { DataTypes } = require("sequelize");
-
 module.exports = (sequelize) => {
-  return sequelize.define("AutoBid", {
+  return sequelize.define("Notification", {
     user_id: DataTypes.STRING,
-    item_id: DataTypes.INTEGER,
-    active: {
+    message: DataTypes.TEXT,
+    read: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },

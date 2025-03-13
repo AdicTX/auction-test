@@ -90,7 +90,6 @@ exports.updateItem = async (req, res) => {
       ...(newImagePath && { image_url: newImagePath }),
       ...(req.body.start_price && {
         start_price: parseFloat(req.body.start_price).toFixed(2),
-        current_price: parseFloat(req.body.start_price).toFixed(2),
       }),
     };
 

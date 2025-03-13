@@ -79,7 +79,6 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-/* Estilos para las tarjetas */
 .MuiCard-root {
   transition: transform 0.2s;
 }

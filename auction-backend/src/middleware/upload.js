@@ -1,8 +1,6 @@
-// middleware/upload.js
 const multer = require("multer");
 const path = require("path");
 
-// Configurar almacenamiento
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -13,7 +11,6 @@ const storage = multer.diskStorage({
   },
 });
 
-// Configurar filtro de archivos
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png/;
   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
@@ -26,7 +23,6 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Inicializar multer con configuración
 const upload = multer({
   storage: storage,
   limits: { fileSize: 1024 * 1024 * 5 }, // Limite de tamaño 5MB

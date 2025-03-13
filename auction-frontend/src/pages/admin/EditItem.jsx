@@ -20,7 +20,7 @@ import axiosInstance from "../../axiosInstance";
 import { Save, Cancel, CloudUpload, Delete } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import moment from "moment";
-
+import { toast, ToastContainer } from "react-toastify";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const VisuallyHiddenInput = styled("input")({
@@ -68,11 +68,19 @@ const EditItem = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith("image/")) {
-      setFormData((prev) => ({ ...prev, image: file, image_url: URL.createObjectURL(file) }));
+      const imageUrl = URL.createObjectURL(file);
+      setFormData((prev) => ({
+        ...prev,
+        image: file,
+        image_url: imageUrl,
+      }));
     }
   };
 
   const removeImage = () => {
+    if (formData.image_url.startsWith("blob:")) {
+      URL.revokeObjectURL(formData.image_url);
+    }
     setFormData((prev) => ({ ...prev, image: null, image_url: "" }));
   };
 
@@ -110,8 +118,10 @@ const EditItem = () => {
       });
 
       setSuccess("Item updated successfully!");
+      toast.success("Item updated successfully!");
       setTimeout(() => navigate("/admin"), 1500);
     } catch (err) {
+      toast.error(err.response?.data?.message || "Update failed");
       setError(err.response?.data?.message || "Update failed");
     } finally {
       setLoading(false);
@@ -120,6 +130,7 @@ const EditItem = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+      <ToastContainer />
       <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 4 }}>
         <Avatar sx={{ bgcolor: "primary.main", width: 48, height: 48 }}>
           <Save fontSize="medium" />
@@ -197,16 +208,20 @@ const EditItem = () => {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <CardMedia
                     component="img"
-                    image={`${baseUrl}/${formData.image_url}`}
+                    image={
+                      formData.image_url.startsWith("blob:")
+                        ? formData.image_url // URL temporal
+                        : `${baseUrl}/${formData.image_url}` // Imagen del backend
+                    }
                     alt="Current item"
                     sx={{ width: 150, height: 150, borderRadius: 2 }}
                   />
-                  <Box sx={{ display: "flex", flexDirection: "column" }}>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 1, width: "180px" }}>
                     <Button
                       component="label"
                       variant="outlined"
                       startIcon={<CloudUpload />}
-                      sx={{ mb: 1, height: "40px", width: "100%" }}
+                      sx={{ height: "50px", width: "100%" }}
                     >
                       Change Image
                       <VisuallyHiddenInput
@@ -220,7 +235,7 @@ const EditItem = () => {
                       color="error"
                       startIcon={<Delete />}
                       onClick={removeImage}
-                      sx={{ ml: 1, height: "40px", width: "100%" }}
+                      sx={{ height: "50px", width: "100%" }}
                     >
                       Remove
                     </Button>

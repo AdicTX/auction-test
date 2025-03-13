@@ -1,8 +1,11 @@
 const jwt = require("jsonwebtoken");
 
 const dummyUsers = {
-  admin1: { password: "admin2", role: "admin" },
-  user1: { password: "user2", role: "regular" },
+  admin1: { password: "password1", role: "admin" },
+  admin2: { password: "password2", role: "admin" },
+  user1: { password: "password1", role: "regular" },
+  user2: { password: "password2", role: "regular" },
+  user3: { password: "password3", role: "regular" },
 };
 
 exports.login = (req, res) => {
@@ -13,9 +16,18 @@ exports.login = (req, res) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
-  const token = jwt.sign({ username, password, role: user.role }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
+  const token = jwt.sign(
+    {
+      username,
+      role: user.role,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
 
-  res.json({ token });
+  res.json({
+    token,
+    role: user.role,
+    username,
+  });
 };
